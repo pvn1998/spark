@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spark — Find Your Person</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#A64A44">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Spark">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="description" content="Real connections, always. Find love that feels right.">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FDF9F4;
+    --blush: #F2C4B0;
+    --rose: #D4736A;
+    --deep-rose: #A64A44;
+    --midnight: #1C1A18;
+    --charcoal: #3A3630;
+    --muted: #8A827A;
+    --pale-blush: #FAF0EB;
+    --gold: #C9A96E;
+    --border: rgba(180,160,148,0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--midnight); overflow-x: hidden; }
+  .serif { font-family: 'Cormorant Garamond', serif; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(250,247,242,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 600; color: var(--deep-rose); letter-spacing: 0.02em; }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a { text-decoration: none; color: var(--charcoal); font-size: 0.875rem; font-weight: 400; letter-spacing: 0.03em; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover { color: var(--deep-rose); }
+  .btn-primary {
+    background: var(--deep-rose); color: white; border: none; padding: 0.625rem 1.5rem;
+    border-radius: 40px; font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+    font-weight: 500; cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em;
+  }
+  .btn-primary:hover { background: #8C3D38; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--deep-rose); border: 1.5px solid var(--deep-rose);
+    padding: 0.625rem 1.5rem; border-radius: 40px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.875rem;
+    font-weight: 500; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--pale-blush); }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* LANDING */
+  #landing { min-height: 100vh; }
+  .hero {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; padding: 8rem 3rem 4rem;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 70% 50%, #F2D5CB 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 20% 80%, #E8D5C4 0%, transparent 50%),
+                var(--cream);
+  }
+  .hero-content { position: relative; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; width: 100%; }
+  .hero-text { }
+  .hero-tag { display: inline-flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid var(--border); border-radius: 40px; padding: 0.375rem 1rem; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .hero-tag span { width: 6px; height: 6px; background: var(--rose); border-radius: 50%; display: inline-block; }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 6vw, 5.5rem); line-height: 1.05; font-weight: 300; color: var(--midnight); margin-bottom: 1.5rem; }
+  .hero-title em { font-style: italic; color: var(--deep-rose); }
+  .hero-subtitle { font-size: 1.0625rem; color: var(--muted); line-height: 1.7; max-width: 420px; margin-bottom: 2.5rem; font-weight: 300; }
+  .hero-cta { display: flex; gap: 1rem; align-items: center; }
+  .hero-stats { display: flex; gap: 2.5rem; margin-top: 3rem; }
+  .stat-item { }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--midnight); line-height: 1; }
+  .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .hero-visual { position: relative; display: flex; justify-content: center; align-items: center; }
+  .profile-stack { position: relative; width: 320px; height: 420px; }
+  .profile-card-bg {
+    position: absolute; width: 260px; height: 340px; border-radius: 20px;
+    background: white; border: 1px solid var(--border); padding: 0;
+    overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+  }
+  .profile-card-bg:nth-child(1) { top: 40px; left: 0; transform: rotate(-6deg); opacity: 0.7; }
+  .profile-card-bg:nth-child(2) { top: 20px; right: 0; transform: rotate(4deg); opacity: 0.85; }
+  .profile-card-main {
+    position: absolute; width: 260px; height: 340px; border-radius: 20px;
+    background: white; border: 1px solid var(--border); overflow: hidden;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.12); top: 30px; left: 50%; transform: translateX(-50%);
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-10px)} }
+  .card-photo { width: 100%; height: 220px; object-fit: cover; background: linear-gradient(135deg, #F2C4B0, #D4736A); display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+  .card-info { padding: 1rem 1.125rem; }
+  .card-name { font-family: 'Cormorant Garamond', serif; font-size: 1.375rem; font-weight: 600; }
+  .card-age { color: var(--muted); font-size: 0.875rem; }
+  .card-tags { display: flex; gap: 0.375rem; margin-top: 0.625rem; flex-wrap: wrap; }
+  .tag { background: var(--pale-blush); color: var(--deep-rose); font-size: 0.6875rem; padding: 0.25rem 0.625rem; border-radius: 20px; }
+  .match-badge { position: absolute; bottom: -10px; right: -10px; background: var(--deep-rose); color: white; font-size: 0.75rem; padding: 0.375rem 0.75rem; border-radius: 20px; font-weight: 500; box-shadow: 0 4px 12px rgba(164,74,68,0.35); }
+
+  /* FEATURES */
+  .features { padding: 6rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .section-tag { font-size: 0.75rem; color: var(--rose); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; margin-bottom: 0.75rem; }
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.25rem, 4vw, 3.5rem); font-weight: 300; line-height: 1.15; margin-bottom: 1rem; }
+  .section-title em { font-style: italic; color: var(--deep-rose); }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3.5rem; }
+  .feature-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: transform 0.25s, box-shadow 0.25s; }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.07); }
+  .feature-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--pale-blush); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem; }
+  .feature-title { font-family: 'Cormorant Garamond', serif; font-size: 1.375rem; font-weight: 600; margin-bottom: 0.625rem; }
+  .feature-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.65; font-weight: 300; }
+
+  /* HOW IT WORKS */
+  .how { background: white; padding: 6rem 3rem; }
+  .how-inner { max-width: 1200px; margin: 0 auto; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+  .step { text-align: center; padding: 1.5rem; }
+  .step-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 600; color: var(--blush); line-height: 1; }
+  .step-icon { font-size: 2rem; margin: 0.5rem 0; }
+  .step-title { font-weight: 500; font-size: 0.9375rem; margin: 0.5rem 0; }
+  .step-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* TESTIMONIALS */
+  .testimonials { padding: 6rem 3rem; max-width: 1200px; margin: 0 auto; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+  .testimonial-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem; }
+  .t-quote { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-style: italic; line-height: 1.7; color: var(--charcoal); margin-bottom: 1.25rem; font-weight: 300; }
+  .t-author { display: flex; align-items: center; gap: 0.75rem; }
+  .t-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--pale-blush); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+  .t-name { font-weight: 500; font-size: 0.875rem; }
+  .t-sub { font-size: 0.75rem; color: var(--muted); }
+  .t-hearts { color: var(--rose); font-size: 0.875rem; }
+
+  /* CTA SECTION */
+  .cta-section { background: var(--midnight); color: white; padding: 5rem 3rem; text-align: center; }
+  .cta-section .section-title { color: white; }
+  .cta-section .section-title em { color: var(--blush); }
+  .cta-subtitle { color: rgba(255,255,255,0.6); margin-top: 1rem; margin-bottom: 2.5rem; font-size: 1rem; }
+  .btn-light { background: white; color: var(--midnight); border: none; padding: 0.875rem 2.5rem; border-radius: 40px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-light:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,255,255,0.2); }
+
+  /* FOOTER */
+  footer { background: var(--charcoal); color: rgba(255,255,255,0.5); padding: 3rem; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: white; }
+  .footer-links { display: flex; gap: 2rem; font-size: 0.8125rem; }
+  .footer-links a { color: rgba(255,255,255,0.45); text-decoration: none; }
+
+  /* SIGNUP PAGE */
+  #signup { min-height: 100vh; background: var(--warm-white); display: flex; align-items: center; justify-content: center; padding: 6rem 1.5rem 3rem; }
+  .signup-wrapper { width: 100%; max-width: 960px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.1); }
+  .signup-left { background: var(--midnight); padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: space-between; }
+  .signup-left-title { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; color: white; line-height: 1.2; }
+  .signup-left-title em { font-style: italic; color: var(--blush); }
+  .signup-perks { list-style: none; margin-top: 2rem; }
+  .signup-perks li { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0; font-size: 0.875rem; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .signup-perks li:last-child { border-bottom: none; }
+  .perk-check { width: 20px; height: 20px; border-radius: 50%; background: rgba(242,196,176,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.625rem; color: var(--blush); flex-shrink: 0; }
+  .signup-right { background: white; padding: 3rem 2.5rem; }
+  .signup-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  .tab-btn { flex: 1; background: none; border: none; padding: 0.75rem; font-size: 0.875rem; font-family: 'DM Sans', sans-serif; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
+  .tab-btn.active { color: var(--deep-rose); border-bottom-color: var(--deep-rose); font-weight: 500; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label { display: block; font-size: 0.8125rem; font-weight: 500; color: var(--charcoal); margin-bottom: 0.375rem; }
+  .form-input {
+    width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: white; color: var(--midnight);
+    transition: border-color 0.2s; outline: none;
+  }
+  .form-input:focus { border-color: var(--rose); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-select { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: white; color: var(--midnight); outline: none; cursor: pointer; }
+  .form-select:focus { border-color: var(--rose); }
+  .submit-btn { width: 100%; background: var(--deep-rose); color: white; border: none; padding: 0.875rem; border-radius: 40px; font-size: 0.9375rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 0.5rem; transition: all 0.2s; }
+  .submit-btn:hover { background: #8C3D38; transform: translateY(-1px); }
+  .divider { display: flex; align-items: center; gap: 1rem; margin: 1.25rem 0; color: var(--muted); font-size: 0.8125rem; }
+  .divider::before,.divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .social-btn { width: 100%; background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.75rem; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; cursor: pointer; color: var(--charcoal); display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s; margin-bottom: 0.625rem; }
+  .social-btn:hover { background: #F0EDE8; }
+
+  /* DISCOVER PAGE */
+  #discover { min-height: 100vh; padding-top: 5rem; background: var(--cream); }
+  .discover-header { background: white; border-bottom: 1px solid var(--border); padding: 1.25rem 3rem; display: flex; align-items: center; justify-content: space-between; }
+  .filter-chips { display: flex; gap: 0.625rem; }
+  .chip { background: var(--cream); border: 1.5px solid var(--border); color: var(--charcoal); padding: 0.4rem 0.875rem; border-radius: 20px; font-size: 0.8125rem; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .chip:hover,.chip.active { background: var(--pale-blush); border-color: var(--rose); color: var(--deep-rose); }
+  .discover-grid-wrap { max-width: 1200px; margin: 0 auto; padding: 2.5rem 3rem; }
+  .discover-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+  .profile-tile { background: white; border-radius: 18px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: transform 0.22s, box-shadow 0.22s; }
+  .profile-tile:hover { transform: translateY(-4px); box-shadow: 0 14px 40px rgba(0,0,0,0.09); }
+  .profile-photo { height: 280px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+  .photo-gradient { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(transparent, rgba(0,0,0,0.4)); }
+  .photo-badge { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.92); border-radius: 20px; padding: 0.25rem 0.625rem; font-size: 0.7rem; font-weight: 500; color: var(--deep-rose); backdrop-filter: blur(4px); }
+  .photo-match { position: absolute; top: 12px; right: 12px; background: var(--deep-rose); color: white; border-radius: 20px; padding: 0.25rem 0.625rem; font-size: 0.7rem; font-weight: 500; }
+  .tile-info { padding: 1rem 1.125rem; }
+  .tile-name { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; }
+  .tile-sub { font-size: 0.8rem; color: var(--muted); margin-top: 0.125rem; }
+  .tile-tags { display: flex; gap: 0.375rem; flex-wrap: wrap; margin-top: 0.625rem; }
+  .tile-actions { display: flex; gap: 0.5rem; padding: 0 1rem 1rem; }
+  .action-btn { flex: 1; padding: 0.5rem; border-radius: 10px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 1rem; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .action-btn:hover { background: var(--pale-blush); border-color: var(--rose); }
+  .action-btn.like { border-color: var(--rose); }
+  .action-btn.like:hover { background: var(--rose); }
+
+  /* MESSAGES PAGE */
+  #messages { min-height: 100vh; padding-top: 5rem; background: var(--cream); }
+  .messages-layout { max-width: 1200px; margin: 0 auto; padding: 2rem 3rem; display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; height: calc(100vh - 7rem); }
+  .conversations-panel { background: white; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
+  .panel-header { padding: 1.25rem; border-bottom: 1px solid var(--border); }
+  .panel-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; }
+  .search-input { width: 100%; background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.875rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; outline: none; margin-top: 0.75rem; }
+  .conv-list { overflow-y: auto; flex: 1; }
+  .conv-item { display: flex; align-items: center; gap: 0.875rem; padding: 0.875rem 1.25rem; cursor: pointer; transition: background 0.15s; border-bottom: 1px solid var(--border); }
+  .conv-item:hover,.conv-item.active { background: var(--pale-blush); }
+  .conv-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--blush); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; position: relative; }
+  .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: #4CAF50; border-radius: 50%; border: 2px solid white; }
+  .conv-details { flex: 1; min-width: 0; }
+  .conv-name { font-weight: 500; font-size: 0.9rem; }
+  .conv-preview { font-size: 0.8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.125rem; }
+  .conv-time { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; }
+  .chat-panel { background: white; border-radius: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .chat-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.875rem; }
+  .chat-header-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--blush); display: flex; align-items: center; justify-content: center; font-size: 1.375rem; position: relative; }
+  .chat-header h4 { font-weight: 500; font-size: 1rem; }
+  .chat-header p { font-size: 0.8rem; color: var(--muted); }
+  .chat-actions-right { margin-left: auto; display: flex; gap: 0.5rem; }
+  .icon-btn { background: none; border: 1px solid var(--border); padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+  .icon-btn:hover { background: var(--cream); }
+  .chat-body { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .msg { display: flex; align-items: flex-end; gap: 0.5rem; max-width: 75%; }
+  .msg.sent { flex-direction: row-reverse; margin-left: auto; }
+  .msg-bubble { padding: 0.75rem 1rem; border-radius: 16px; font-size: 0.875rem; line-height: 1.5; }
+  .msg.received .msg-bubble { background: var(--cream); color: var(--midnight); border-bottom-left-radius: 4px; }
+  .msg.sent .msg-bubble { background: var(--deep-rose); color: white; border-bottom-right-radius: 4px; }
+  .msg-time { font-size: 0.7rem; color: var(--muted); }
+  .chat-input-area { padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; align-items: flex-end; }
+  .chat-input { flex: 1; background: var(--cream); border: 1.5px solid var(--border); border-radius: 12px; padding: 0.75rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; resize: none; outline: none; max-height: 120px; }
+  .chat-input:focus { border-color: var(--rose); }
+  .send-btn { background: var(--deep-rose); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .send-btn:hover { background: #8C3D38; transform: scale(1.05); }
+
+  /* PROFILE PAGE */
+  #profile { min-height: 100vh; padding-top: 5rem; background: var(--cream); }
+  .profile-layout { max-width: 900px; margin: 0 auto; padding: 2.5rem 3rem; }
+  .profile-header-card { background: white; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 1.5rem; }
+  .profile-cover { height: 160px; background: linear-gradient(135deg, #D4736A 0%, #C9A96E 100%); position: relative; }
+  .profile-avatar-wrap { position: absolute; bottom: -40px; left: 2rem; }
+  .profile-avatar { width: 88px; height: 88px; border-radius: 50%; background: var(--pale-blush); border: 4px solid white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+  .profile-info { padding: 3rem 2rem 2rem; }
+  .profile-name { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; }
+  .profile-tagline { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+  .profile-meta { display: flex; gap: 1.5rem; margin-top: 1rem; }
+  .meta-item { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 0.375rem; }
+  .edit-profile-btn { float: right; margin-top: -3.5rem; }
+  .profile-section { background: white; border-radius: 16px; border: 1px solid var(--border); padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.125rem; }
+  .section-head h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; }
+  .edit-link { font-size: 0.8125rem; color: var(--rose); cursor: pointer; text-decoration: underline; }
+  .about-text { font-size: 0.9rem; color: var(--charcoal); line-height: 1.7; font-weight: 300; }
+  .interests-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .interest-pill { background: var(--pale-blush); color: var(--deep-rose); padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.8125rem; }
+  .photos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; }
+  .photo-cell { aspect-ratio: 1; border-radius: 12px; background: var(--pale-blush); display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; transition: transform 0.2s; overflow: hidden; }
+  .photo-cell:hover { transform: scale(1.02); }
+  .add-photo { border: 2px dashed var(--border); background: white; font-size: 1.5rem; color: var(--muted); }
+  .add-photo:hover { border-color: var(--rose); color: var(--rose); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .stat-box { text-align: center; padding: 1rem; background: var(--cream); border-radius: 12px; }
+  .stat-box .num { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 600; color: var(--deep-rose); }
+  .stat-box .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.125rem; }
+
+  /* NOTIFICATION BELL */
+  .notif-bell { position: relative; }
+  .notif-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--rose); border-radius: 50%; border: 1.5px solid var(--cream); }
+
+  /* MATCH POPUP */
+  .match-popup-overlay { display: none; position: fixed; inset: 0; background: rgba(28,26,24,0.7); z-index: 200; align-items: center; justify-content: center; }
+  .match-popup-overlay.show { display: flex; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .match-popup { background: white; border-radius: 24px; padding: 3rem 2.5rem; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 32px 80px rgba(0,0,0,0.2); animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+  .match-emoji { font-size: 4rem; margin-bottom: 1rem; }
+  .match-popup h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.25rem; font-weight: 600; color: var(--deep-rose); }
+  .match-popup p { color: var(--muted); margin: 0.75rem 0 1.75rem; font-size: 0.9375rem; }
+  .match-popup .btn-primary { width: 100%; padding: 0.875rem; font-size: 0.9375rem; }
+  .match-popup .btn-outline { width: 100%; padding: 0.875rem; font-size: 0.9375rem; margin-top: 0.625rem; }
+  .match-avatars { display: flex; justify-content: center; gap: -1rem; margin-bottom: 1.5rem; }
+  .match-av { width: 70px; height: 70px; border-radius: 50%; background: var(--pale-blush); border: 3px solid white; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+  .match-av:first-child { margin-right: -16px; }
+  .heart-between { font-size: 1.5rem; align-self: center; position: relative; z-index: 2; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--midnight); color: white; padding: 0.875rem 1.5rem; border-radius: 12px; font-size: 0.875rem; z-index: 300; opacity: 0; transform: translateY(10px); transition: all 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ACTIVE PAGE INDICATOR */
+  .nav-links a.active { color: var(--deep-rose); font-weight: 500; }
+
+  /* PWA INSTALL BANNER */
+  #installBanner {
+    display: none; position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    background: var(--midnight); color: white; border-radius: 16px; padding: 1rem 1.25rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25); z-index: 500; align-items: center;
+    gap: 1rem; max-width: 420px; width: calc(100% - 2rem); animation: slideUp 0.4s ease;
+  }
+  #installBanner.show { display: flex; }
+  @keyframes slideUp { from{transform:translateX(-50%) translateY(20px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
+  .install-icon { font-size: 2rem; flex-shrink: 0; }
+  .install-text { flex: 1; }
+  .install-text strong { display: block; font-size: 0.9rem; margin-bottom: 0.125rem; }
+  .install-text span { font-size: 0.775rem; color: rgba(255,255,255,0.55); }
+  .install-btn { background: var(--rose); color: white; border: none; padding: 0.5rem 1.125rem; border-radius: 20px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+  .install-close { background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.25rem; cursor: pointer; flex-shrink: 0; padding: 0; line-height: 1; }
+  #iosGuide {
+    display: none; position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    background: var(--midnight); color: white; border-radius: 16px; padding: 1.25rem 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25); z-index: 500;
+    max-width: 360px; width: calc(100% - 2rem); animation: slideUp 0.4s ease;
+  }
+  #iosGuide.show { display: block; }
+  #iosGuide h4 { font-size: 0.9375rem; font-weight: 500; margin-bottom: 0.75rem; }
+  #iosGuide ol { padding-left: 1.25rem; font-size: 0.85rem; color: rgba(255,255,255,0.75); line-height: 2; }
+  .ios-close { display: block; text-align: center; margin-top: 1rem; background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.5rem; border-radius: 8px; width: 100%; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.8125rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Sp<span>✦</span>rk</div>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('landing')" id="nav-home" class="active">Home</a>
+    <a href="#" onclick="showPage('discover')" id="nav-discover">Discover</a>
+    <a href="#" onclick="showPage('messages')" id="nav-messages">Messages <span style="background:var(--rose);color:white;font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:10px;margin-left:2px;">3</span></a>
+    <a href="#" onclick="showPage('profile')" id="nav-profile">Profile</a>
+  </div>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <button class="btn-outline" onclick="showPage('signup');switchTab('login')">Log In</button>
+    <button class="btn-primary" onclick="showPage('signup');switchTab('signup')">Join Free</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ LANDING ═══════════════════════ -->
+<div class="page active" id="landing">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="hero-tag"><span></span> Real connections, always</div>
+        <h1 class="hero-title">Find love<br>that feels <em>right</em></h1>
+        <p class="hero-subtitle">Spark brings together people who actually want something real. Smart matching, genuine conversations, no games.</p>
+        <div class="hero-cta">
+          <button class="btn-primary" style="padding:0.875rem 2rem;font-size:0.9375rem;" onclick="showPage('signup')">Get Started Free</button>
+          <button class="btn-outline" style="padding:0.875rem 2rem;font-size:0.9375rem;" onclick="showPage('discover')">Browse Profiles</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item"><div class="stat-num serif">2.4M</div><div class="stat-label">Members</div></div>
+          <div class="stat-item"><div class="stat-num serif">186k</div><div class="stat-label">Couples matched</div></div>
+          <div class="stat-item"><div class="stat-num serif">94%</div><div class="stat-label">Match satisfaction</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="profile-stack">
+          <div class="profile-card-bg">
+            <div class="card-photo">🌿</div>
+            <div class="card-info"><div class="card-name serif">Elise, 27</div></div>
+          </div>
+          <div class="profile-card-bg">
+            <div class="card-photo" style="background:linear-gradient(135deg,#c9a96e,#d4736a);">☀️</div>
+            <div class="card-info"><div class="card-name serif">Marco, 31</div></div>
+          </div>
+          <div class="profile-card-main">
+            <div class="card-photo">🌸</div>
+            <div class="card-info">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="card-name serif">Sophie, 28</div>
+                <div class="card-age">Berlin</div>
+              </div>
+              <div class="card-tags">
+                <span class="tag">Art</span>
+                <span class="tag">Travel</span>
+                <span class="tag">Coffee</span>
+              </div>
+            </div>
+            <div class="match-badge">97% match ✨</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="section-tag">Why Spark</div>
+    <h2 class="section-title">Everything you need<br>to find <em>the one</em></h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-title serif">Smart Matching</div>
+        <p class="feature-desc">Our algorithm learns what truly matters to you — beyond just photos. It analyzes values, interests, and lifestyle for deeper compatibility.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title serif">Icebreaker Prompts</div>
+        <p class="feature-desc">Never stare at a blank message box again. Curated questions spark real conversations from the very first message.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title serif">Private & Safe</div>
+        <p class="feature-desc">All profiles are verified. Your data is yours. We never sell your information or show ads based on your private messages.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <div class="feature-title serif">Local & Global</div>
+        <p class="feature-desc">Meet people nearby or connect across the world. Set your preferred distance and let Spark find who's right for you.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
+        <div class="feature-title serif">Curated Daily Picks</div>
+        <p class="feature-desc">Each morning you receive a handpicked selection of profiles. Quality over quantity — because the right person matters more than a hundred options.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title serif">Compatibility Score</div>
+        <p class="feature-desc">See at a glance how well you align on the things that matter: values, communication style, life goals, and more.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="how-inner">
+      <div class="section-tag">Getting started</div>
+      <h2 class="section-title">Four steps to your<br><em>perfect match</em></h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num serif">01</div>
+          <div class="step-icon">📝</div>
+          <div class="step-title">Create your profile</div>
+          <p class="step-desc">Tell us who you are and what you're looking for. Add photos, write your story, pick your interests.</p>
+        </div>
+        <div class="step">
+          <div class="step-num serif">02</div>
+          <div class="step-icon">🔍</div>
+          <div class="step-title">Get your matches</div>
+          <p class="step-desc">Our algorithm curates profiles tailored to your personality and what you genuinely value in a partner.</p>
+        </div>
+        <div class="step">
+          <div class="step-num serif">03</div>
+          <div class="step-icon">💫</div>
+          <div class="step-title">Like &amp; connect</div>
+          <p class="step-desc">When you and someone both like each other, it's a match! Start chatting instantly with icebreaker questions.</p>
+        </div>
+        <div class="step">
+          <div class="step-num serif">04</div>
+          <div class="step-icon">❤️</div>
+          <div class="step-title">Meet in real life</div>
+          <p class="step-desc">Move the conversation forward. Plan your first date, make memories, and write your own story.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="section-tag">Real stories</div>
+    <h2 class="section-title">Love found on <em>Spark</em></h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="t-hearts">♥ ♥ ♥ ♥ ♥</div>
+        <p class="t-quote">"I'd tried every app out there. Spark was different — the matches actually made sense. Met my partner in the second week and we've been inseparable since."</p>
+        <div class="t-author">
+          <div class="t-avatar">🌻</div>
+          <div><div class="t-name">Lena K.</div><div class="t-sub">Hamburg · Together 14 months</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-hearts">♥ ♥ ♥ ♥ ♥</div>
+        <p class="t-quote">"The compatibility scores are no joke. My match was 94% and our first date lasted six hours. We're getting married next spring."</p>
+        <div class="t-author">
+          <div class="t-avatar">🌊</div>
+          <div><div class="t-name">Tobias M.</div><div class="t-sub">Munich · Engaged 🎉</div></div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="t-hearts">♥ ♥ ♥ ♥ ♥</div>
+        <p class="t-quote">"As a busy professional I needed something that respects my time. Spark's curated picks meant I focused on quality over scrolling endlessly. Found her in three weeks."</p>
+        <div class="t-author">
+          <div class="t-avatar">🍀</div>
+          <div><div class="t-name">Nina R.</div><div class="t-sub">Berlin · Together 8 months</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="section-tag" style="color:var(--blush);">Ready?</div>
+    <h2 class="section-title">Your story starts<br><em>today</em></h2>
+    <p class="cta-subtitle">Join over 2.4 million people already finding connection on Spark.</p>
+    <button class="btn-light" onclick="showPage('signup')">Create Your Free Profile →</button>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo serif">Sp✦rk</div>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Safety</a>
+        <a href="#">Blog</a>
+        <a href="#">Contact</a>
+      </div>
+      <div style="font-size:0.8125rem;">© 2025 Spark Dating, Inc.</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════ SIGNUP / LOGIN ═══════════════════════ -->
+<div class="page" id="signup">
+  <div id="signup-inner" style="min-height:100vh;background:var(--warm-white);display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem 3rem;">
+    <div class="signup-wrapper">
+      <div class="signup-left">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--blush);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.5rem;">Spark</div>
+          <div class="signup-left-title">Find someone<br>who makes life<br><em>better</em></div>
+          <ul class="signup-perks">
+            <li><div class="perk-check">✓</div>Free to join & browse</li>
+            <li><div class="perk-check">✓</div>Smart compatibility matching</li>
+            <li><div class="perk-check">✓</div>Real verified profiles</li>
+            <li><div class="perk-check">✓</div>Private, ad-free messaging</li>
+            <li><div class="perk-check">✓</div>Cancel anytime</li>
+          </ul>
+        </div>
+        <div style="color:rgba(255,255,255,0.4);font-size:0.75rem;margin-top:2rem;">By joining you agree to our <span style="color:var(--blush);cursor:pointer;text-decoration:underline;">Terms</span> and <span style="color:var(--blush);cursor:pointer;text-decoration:underline;">Privacy Policy</span>.</div>
+      </div>
+      <div class="signup-right">
+        <div class="signup-tabs">
+          <button class="tab-btn active" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+          <button class="tab-btn" id="tab-login" onclick="switchTab('login')">Log In</button>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="form-signup">
+          <button class="social-btn">🔵 Continue with Google</button>
+          <button class="social-btn">🍎 Continue with Apple</button>
+          <div class="divider">or with email</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First name</label>
+              <input type="text" class="form-input" placeholder="Your name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-input" placeholder="26" min="18" max="99">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" class="form-input" placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" placeholder="Min. 8 characters">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">I identify as</label>
+              <select class="form-select">
+                <option>Woman</option>
+                <option>Man</option>
+                <option>Non-binary</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Looking for</label>
+              <select class="form-select">
+                <option>Men</option>
+                <option>Women</option>
+                <option>Everyone</option>
+              </select>
+            </div>
+          </div>
+          <button class="submit-btn" onclick="doSignup()">Create My Account →</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="form-login" style="display:none;">
+          <button class="social-btn">🔵 Continue with Google</button>
+          <button class="social-btn">🍎 Continue with Apple</button>
+          <div class="divider">or with email</div>
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" class="form-input" placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" placeholder="Your password">
+          </div>
+          <button class="submit-btn" onclick="doLogin()">Log In →</button>
+          <div style="text-align:center;margin-top:1rem;font-size:0.8125rem;color:var(--muted);">
+            Forgot password? <span style="color:var(--rose);cursor:pointer;">Reset it</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DISCOVER ═══════════════════════ -->
+<div class="page" id="discover">
+  <div class="discover-header">
+    <div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;">Discover</h2>
+      <p style="font-size:0.8125rem;color:var(--muted);">Showing matches near Berlin · Updated today</p>
+    </div>
+    <div class="filter-chips">
+      <button class="chip active" onclick="filterChip(this)">All</button>
+      <button class="chip" onclick="filterChip(this)">New</button>
+      <button class="chip" onclick="filterChip(this)">Top Picks</button>
+      <button class="chip" onclick="filterChip(this)">Nearby</button>
+      <button class="chip" onclick="filterChip(this)">Online Now</button>
+    </div>
+    <div style="display:flex;gap:0.625rem;">
+      <button class="chip" style="gap:0.375rem;display:flex;align-items:center;">⚙ Filters</button>
+    </div>
+  </div>
+  <div class="discover-grid-wrap">
+    <div class="discover-grid" id="profileGrid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MESSAGES ═══════════════════════ -->
+<div class="page" id="messages">
+  <div class="messages-layout">
+    <div class="conversations-panel">
+      <div class="panel-header">
+        <h3 class="serif">Messages</h3>
+        <input type="text" class="search-input" placeholder="🔍  Search conversations…">
+      </div>
+      <div class="conv-list" id="convList"></div>
+    </div>
+    <div class="chat-panel">
+      <div class="chat-header" id="chatHeader">
+        <div class="chat-header-avatar">🌸</div>
+        <div>
+          <h4>Sophie</h4>
+          <p>🟢 Active now</p>
+        </div>
+        <div class="chat-actions-right">
+          <button class="icon-btn">📞</button>
+          <button class="icon-btn">📷</button>
+          <button class="icon-btn">⋯</button>
+        </div>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="msgInput" rows="1" placeholder="Write a message…" onkeydown="handleKey(event)"></textarea>
+        <button class="send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PROFILE ═══════════════════════ -->
+<div class="page" id="profile">
+  <div class="profile-layout">
+    <div class="profile-header-card">
+      <div class="profile-cover"></div>
+      <div class="profile-info">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar">😊</div>
+        </div>
+        <button class="btn-outline edit-profile-btn" onclick="showToast('Profile editing mode')">Edit Profile</button>
+        <div class="profile-name serif">Alex Morgan</div>
+        <div class="profile-tagline">Photographer & coffee enthusiast · Berlin, Germany</div>
+        <div class="profile-meta">
+          <div class="meta-item">📍 Berlin</div>
+          <div class="meta-item">🎂 28 years old</div>
+          <div class="meta-item">💼 Creative director</div>
+          <div class="meta-item">🎓 Fine Arts, FU Berlin</div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row" style="margin-bottom:1.5rem;">
+      <div class="stat-box"><div class="num">142</div><div class="lbl">Profile views</div></div>
+      <div class="stat-box"><div class="num">38</div><div class="lbl">Likes received</div></div>
+      <div class="stat-box"><div class="num">12</div><div class="lbl">Matches</div></div>
+      <div class="stat-box"><div class="num">97%</div><div class="lbl">Profile complete</div></div>
+    </div>
+    <div class="profile-section">
+      <div class="section-head">
+        <h3 class="serif">About me</h3>
+        <span class="edit-link" onclick="showToast('Editing bio…')">Edit</span>
+      </div>
+      <p class="about-text">I'm a photographer and creative director who loves capturing the quiet moments between the loud ones. Coffee is a religion for me — I've been to most specialty roasters in Berlin and I'm still searching for the perfect flat white. I value depth over breadth: fewer, deeper conversations about the things that actually matter. Looking for someone who laughs easily, thinks carefully, and doesn't mind spontaneous Sunday trips.</p>
+    </div>
+    <div class="profile-section">
+      <div class="section-head">
+        <h3 class="serif">Interests</h3>
+        <span class="edit-link" onclick="showToast('Editing interests…')">Edit</span>
+      </div>
+      <div class="interests-grid">
+        <span class="interest-pill">📷 Photography</span>
+        <span class="interest-pill">☕ Specialty coffee</span>
+        <span class="interest-pill">🎵 Jazz & indie</span>
+        <span class="interest-pill">🌍 Travel</span>
+        <span class="interest-pill">🍳 Cooking</span>
+        <span class="interest-pill">📚 Literary fiction</span>
+        <span class="interest-pill">🎨 Contemporary art</span>
+        <span class="interest-pill">🏃 Running</span>
+        <span class="interest-pill">🌱 Sustainability</span>
+        <span class="interest-pill">🎬 Indie films</span>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="section-head">
+        <h3 class="serif">Photos</h3>
+        <span class="edit-link" onclick="showToast('Managing photos…')">Manage</span>
+      </div>
+      <div class="photos-grid">
+        <div class="photo-cell" style="background:linear-gradient(135deg,#F2C4B0,#D4736A);">📷</div>
+        <div class="photo-cell" style="background:linear-gradient(135deg,#C9A96E,#A08050);">🌄</div>
+        <div class="photo-cell" style="background:linear-gradient(135deg,#b8d8c0,#7aab8a);">🌿</div>
+        <div class="photo-cell" style="background:linear-gradient(135deg,#c4c4e0,#8080b0);">🏙️</div>
+        <div class="photo-cell" style="background:linear-gradient(135deg,#f0d0b0,#c09060);">☕</div>
+        <div class="photo-cell" style="background:linear-gradient(135deg,#e0c4d8,#b090a0);">🎨</div>
+        <div class="photo-cell add-photo" onclick="showToast('Photo upload coming soon')">＋</div>
+        <div class="photo-cell add-photo" onclick="showToast('Photo upload coming soon')">＋</div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="section-head">
+        <h3 class="serif">Relationship preferences</h3>
+        <span class="edit-link" onclick="showToast('Editing preferences…')">Edit</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div style="padding:0.875rem 1rem;background:var(--cream);border-radius:10px;">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.25rem;">Looking for</div>
+          <div style="font-size:0.9rem;font-weight:500;">Long-term relationship</div>
+        </div>
+        <div style="padding:0.875rem 1rem;background:var(--cream);border-radius:10px;">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.25rem;">Age range</div>
+          <div style="font-size:0.9rem;font-weight:500;">24 – 36 years</div>
+        </div>
+        <div style="padding:0.875rem 1rem;background:var(--cream);border-radius:10px;">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.25rem;">Distance</div>
+          <div style="font-size:0.9rem;font-weight:500;">Up to 50 km</div>
+        </div>
+        <div style="padding:0.875rem 1rem;background:var(--cream);border-radius:10px;">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.25rem;">Open to</div>
+          <div style="font-size:0.9rem;font-weight:500;">Women & non-binary</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MATCH POPUP -->
+<div class="match-popup-overlay" id="matchPopup">
+  <div class="match-popup">
+    <div class="match-emoji">🎉</div>
+    <div class="match-avatars">
+      <div class="match-av">😊</div>
+      <div class="heart-between">❤️</div>
+      <div class="match-av" id="matchAv">🌸</div>
+    </div>
+    <h2>It's a Match!</h2>
+    <p>You and <strong id="matchName">Sophie</strong> both liked each other.<br>Start a conversation now!</p>
+    <button class="btn-primary" onclick="goToChat()">Send a Message</button>
+    <button class="btn-outline" onclick="closeMatch()">Maybe Later</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────────
+  const profiles = [
+    { id:1, name:'Sophie', age:28, city:'Berlin', emoji:'🌸', match:97, online:true, tags:['Art','Travel','Jazz'], bg:'linear-gradient(135deg,#F2C4B0,#C9736A)', badge:'New' },
+    { id:2, name:'Clara', age:26, city:'Hamburg', emoji:'🌻', match:91, online:false, tags:['Books','Hiking','Wine'], bg:'linear-gradient(135deg,#C9E4B0,#7AAB6A)', badge:'Top Pick' },
+    { id:3, name:'Mia', age:30, city:'Munich', emoji:'🌊', match:88, online:true, tags:['Yoga','Cooking','Films'], bg:'linear-gradient(135deg,#B0CDE4,#6A8AB0)', badge:'' },
+    { id:4, name:'Lena', age:27, city:'Cologne', emoji:'🍀', match:85, online:false, tags:['Music','Coffee','Design'], bg:'linear-gradient(135deg,#E4C4B0,#A08060)', badge:'New' },
+    { id:5, name:'Emma', age:29, city:'Berlin', emoji:'🎨', match:93, online:true, tags:['Photography','Travel','Food'], bg:'linear-gradient(135deg,#E4B0C9,#A06080)', badge:'Top Pick' },
+    { id:6, name:'Anna', age:25, city:'Frankfurt', emoji:'🦋', match:82, online:false, tags:['Dance','Literature','Nature'], bg:'linear-gradient(135deg,#C4B0E4,#7060A0)', badge:'' },
+    { id:7, name:'Julia', age:31, city:'Berlin', emoji:'🌺', match:90, online:true, tags:['Sports','Tech','Cooking'], bg:'linear-gradient(135deg,#E4D4B0,#B09060)', badge:'New' },
+    { id:8, name:'Sara', age:28, city:'Düsseldorf', emoji:'🌙', match:87, online:false, tags:['Fashion','Travel','Wellness'], bg:'linear-gradient(135deg,#B0E4D4,#60A090)', badge:'' },
+  ];
+
+  const conversations = [
+    { id:1, name:'Sophie', emoji:'🌸', last:'Sounds great! How about Saturday?', time:'2m', unread:2, online:true },
+    { id:2, name:'Emma', emoji:'🎨', last:'I totally agree about that film!', time:'1h', unread:1, online:true },
+    { id:3, name:'Mia', emoji:'🌊', last:'Would love to grab coffee sometime ☕', time:'3h', unread:0, online:false },
+    { id:4, name:'Clara', emoji:'🌻', last:'Haha yes that hike sounds fun!', time:'1d', unread:0, online:false },
+    { id:5, name:'Lena', emoji:'🍀', last:'What kind of music do you like?', time:'2d', unread:0, online:false },
+  ];
+
+  const chatHistories = {
+    1: [
+      { from:'them', text:'Hey! I saw you like photography too — what kind of subjects do you usually shoot?', time:'Yesterday 18:22' },
+      { from:'me', text:'Hey Sophie! Mostly street photography and portraits. There's something magical about capturing people in their natural element. What about you?', time:'Yesterday 18:45' },
+      { from:'them', text:'I love that! I do a lot of travel photography — landscapes and architecture. Would love to see your work sometime!', time:'Yesterday 19:01' },
+      { from:'me', text:'I'd love that too! I'm actually working on an exhibition right now. It's a bit nerve-wracking but exciting.', time:'Yesterday 19:15' },
+      { from:'them', text:'That's amazing! When is it? Sounds great! How about Saturday?', time:'Just now' },
+    ]
+  };
+
+  let activeConv = 1;
+
+  // ── NAVIGATION ────────────────────────────────────────────
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const map = {landing:'nav-home',discover:'nav-discover',messages:'nav-messages',profile:'nav-profile'};
+    if(map[id]) document.getElementById(map[id]).classList.add('active');
+    window.scrollTo(0,0);
+    if(id==='discover') renderProfiles();
+    if(id==='messages') renderMessages();
+  }
+
+  // ── SIGNUP / LOGIN ─────────────────────────────────────────
+  function switchTab(tab) {
+    document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+    document.getElementById('tab-login').classList.toggle('active', tab==='login');
+    document.getElementById('form-signup').style.display = tab==='signup' ? 'block' : 'none';
+    document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
+  }
+  function doSignup() { showPage('discover'); showToast('Welcome to Spark! 🎉'); }
+  function doLogin() { showPage('discover'); showToast('Welcome back! 💫'); }
+
+  // ── DISCOVER ──────────────────────────────────────────────
+  function renderProfiles() {
+    const grid = document.getElementById('profileGrid');
+    grid.innerHTML = profiles.map(p => `
+      <div class="profile-tile" onclick="likeProfile(${p.id},'${p.name}','${p.emoji}')">
+        <div class="profile-photo" style="background:${p.bg};">
+          <div class="photo-gradient"></div>
+          ${p.badge ? `<div class="photo-badge">${p.badge}</div>` : ''}
+          <div class="photo-match">${p.match}% match</div>
+          <span style="font-size:5rem;">${p.emoji}</span>
+        </div>
+        <div class="tile-info">
+          <div class="tile-name serif">${p.name}, ${p.age}</div>
+          <div class="tile-sub">${p.online ? '🟢 Online now' : '⚫ Recently active'} · ${p.city}</div>
+          <div class="tile-tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="tile-actions">
+          <button class="action-btn" onclick="event.stopPropagation();skipProfile('${p.name}')" title="Skip">✕ Pass</button>
+          <button class="action-btn like" onclick="event.stopPropagation();likeProfile(${p.id},'${p.name}','${p.emoji}')" title="Like">♥ Like</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function likeProfile(id, name, emoji) {
+    if(Math.random() > 0.45) {
+      document.getElementById('matchName').textContent = name;
+      document.getElementById('matchAv').textContent = emoji;
+      document.getElementById('matchPopup').classList.add('show');
+    } else {
+      showToast(`You liked ${name}! 💫`);
+    }
+  }
+  function skipProfile(name) { showToast(`Skipped ${name}`); }
+  function closeMatch() { document.getElementById('matchPopup').classList.remove('show'); }
+  function goToChat() { document.getElementById('matchPopup').classList.remove('show'); showPage('messages'); }
+
+  function filterChip(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── MESSAGES ─────────────────────────────────────────────
+  function renderMessages() {
+    const list = document.getElementById('convList');
+    list.innerHTML = conversations.map(c => `
+      <div class="conv-item ${c.id===activeConv?'active':''}" onclick="openConv(${c.id},'${c.name}','${c.emoji}')">
+        <div class="conv-avatar">
+          ${c.emoji}
+          ${c.online ? '<div class="online-dot"></div>' : ''}
+        </div>
+        <div class="conv-details">
+          <div style="display:flex;justify-content:space-between;">
+            <div class="conv-name">${c.name}</div>
+            <div class="conv-time">${c.time}</div>
+          </div>
+          <div class="conv-preview">${c.last}</div>
+        </div>
+        ${c.unread ? `<div style="width:18px;height:18px;background:var(--rose);color:white;border-radius:50%;font-size:0.7rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${c.unread}</div>` : ''}
+      </div>
+    `).join('');
+    loadChat(activeConv);
+  }
+
+  function openConv(id, name, emoji) {
+    activeConv = id;
+    document.getElementById('chatHeader').innerHTML = `
+      <div class="chat-header-avatar">${emoji}<div class="online-dot"></div></div>
+      <div><h4>${name}</h4><p>🟢 Active now</p></div>
+      <div class="chat-actions-right">
+        <button class="icon-btn">📞</button>
+        <button class="icon-btn">📷</button>
+        <button class="icon-btn">⋯</button>
+      </div>
+    `;
+    loadChat(id);
+    document.querySelectorAll('.conv-item').forEach((el,i) => el.classList.toggle('active', i===id-1));
+  }
+
+  function loadChat(id) {
+    const body = document.getElementById('chatBody');
+    const history = chatHistories[id] || [
+      { from:'them', text:'Hey there! 👋', time:'Earlier' },
+      { from:'me', text:'Hey! Great to match with you!', time:'Earlier' },
+    ];
+    body.innerHTML = history.map(m => `
+      <div class="msg ${m.from==='me'?'sent':'received'}">
+        <div class="msg-bubble">${m.text}</div>
+        <div class="msg-time">${m.time}</div>
+      </div>
+    `).join('');
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function sendMsg() {
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if(!text) return;
+    const body = document.getElementById('chatBody');
+    const msgEl = document.createElement('div');
+    msgEl.className = 'msg sent';
+    msgEl.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">Now</div>`;
+    body.appendChild(msgEl);
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+    // Simulated reply
+    setTimeout(() => {
+      const replies = ['That sounds lovely! 😊', 'I was thinking the same thing!', 'Tell me more about that!', 'Haha yes, totally!', '❤️'];
+      const reply = document.createElement('div');
+      reply.className = 'msg received';
+      reply.innerHTML = `<div class="msg-bubble">${replies[Math.floor(Math.random()*replies.length)]}</div><div class="msg-time">Now</div>`;
+      body.appendChild(reply);
+      body.scrollTop = body.scrollHeight;
+    }, 1200);
+  }
+
+  function handleKey(e) {
+    if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  }
+
+  // ── TOAST ─────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // ── INIT ──────────────────────────────────────────────────
+  renderProfiles();
+</script>
+
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner" style="display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1C1A18;color:white;border-radius:16px;padding:1rem 1.25rem;box-shadow:0 8px 32px rgba(0,0,0,0.25);z-index:500;align-items:center;gap:1rem;max-width:420px;width:calc(100% - 2rem);">
+  <div style="font-size:2rem;flex-shrink:0;">✦</div>
+  <div style="flex:1;">
+    <strong style="display:block;font-size:0.9rem;margin-bottom:0.125rem;">Install Spark</strong>
+    <span style="font-size:0.775rem;color:rgba(255,255,255,0.55);">Add to home screen · works offline</span>
+  </div>
+  <button id="installBtn" style="background:#D4736A;color:white;border:none;padding:0.5rem 1.125rem;border-radius:20px;font-size:0.8125rem;font-weight:500;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;">Install</button>
+  <button onclick="document.getElementById('installBanner').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.25rem;cursor:pointer;flex-shrink:0;padding:0;line-height:1;">✕</button>
+</div>
+
+<!-- iOS INSTALL GUIDE -->
+<div id="iosGuide" style="display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1C1A18;color:white;border-radius:16px;padding:1.25rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,0.25);z-index:500;max-width:360px;width:calc(100% - 2rem);">
+  <div style="font-size:0.9375rem;font-weight:500;margin-bottom:0.75rem;">📲 Install Spark on iPhone</div>
+  <ol style="padding-left:1.25rem;font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:2.2;margin:0;">
+    <li>Tap the <strong>Share ⬆</strong> button at the bottom of Safari</li>
+    <li>Tap <strong>"Add to Home Screen"</strong></li>
+    <li>Tap <strong>"Add"</strong> — done!</li>
+  </ol>
+  <button onclick="document.getElementById('iosGuide').style.display='none'" style="display:block;text-align:center;margin-top:1rem;background:rgba(255,255,255,0.1);border:none;color:white;padding:0.5rem;border-radius:8px;width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.8125rem;">Got it</button>
+</div>
+
+<script>
+  // Generate app icon via canvas
+  function makeIcon(size) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const x = c.getContext('2d');
+    const rd = size * 0.18;
+    x.beginPath();
+    x.moveTo(rd,0); x.lineTo(size-rd,0); x.quadraticCurveTo(size,0,size,rd);
+    x.lineTo(size,size-rd); x.quadraticCurveTo(size,size,size-rd,size);
+    x.lineTo(rd,size); x.quadraticCurveTo(0,size,0,size-rd);
+    x.lineTo(0,rd); x.quadraticCurveTo(0,0,rd,0); x.closePath();
+    const g = x.createLinearGradient(0,0,size,size);
+    g.addColorStop(0,'#D4736A'); g.addColorStop(1,'#A64A44');
+    x.fillStyle = g; x.fill();
+    x.fillStyle = 'white';
+    x.font = 'bold ' + (size*0.44) + 'px Georgia,serif';
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText('✦', size/2, size*0.52);
+    return c.toDataURL('image/png');
+  }
+
+  // Inject apple-touch-icon
+  const iconData = makeIcon(192);
+  const appleLink = document.createElement('link');
+  appleLink.rel = 'apple-touch-icon';
+  appleLink.href = iconData;
+  document.head.appendChild(appleLink);
+
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+
+  // Android/Chrome install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    setTimeout(() => {
+      const b = document.getElementById('installBanner');
+      b.style.display = 'flex';
+    }, 3000);
+  });
+
+  document.getElementById('installBtn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') showToast('Spark installed! \uD83C\uDF89');
+    deferredPrompt = null;
+    document.getElementById('installBanner').style.display = 'none';
+  });
+
+  window.addEventListener('appinstalled', () => showToast('Spark added to home screen! \u2728'));
+
+  // iOS prompt
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent.toLowerCase());
+  if (isIOS && !window.navigator.standalone) {
+    setTimeout(() => { document.getElementById('iosGuide').style.display = 'block'; }, 4000);
+  }
+</script>
+
+</body>
+</html>
