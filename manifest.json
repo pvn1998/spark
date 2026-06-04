@@ -2,85 +2,29 @@
   "name": "Spark — Find Your Person",
   "short_name": "Spark",
   "description": "Real connections, always. Find love that feels right.",
-  "start_url": "/index.html",
+  "start_url": "/spark/index.html",
+  "scope": "/spark/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FAF7F2",
   "theme_color": "#A64A44",
   "categories": ["social", "lifestyle"],
   "icons": [
-    {
-      "src": "icons/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Home screen"
-    }
+    { "src": "https://pvn1998.github.io/spark/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "https://pvn1998.github.io/spark/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
     {
       "name": "Discover",
       "short_name": "Discover",
       "description": "Browse your matches",
-      "url": "/index.html#discover",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "url": "/spark/index.html#discover"
     },
     {
       "name": "Messages",
       "short_name": "Messages",
       "description": "Your conversations",
-      "url": "/index.html#messages",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "url": "/spark/index.html#messages"
     }
   ]
 }

@@ -1,14 +1,21 @@
-const CACHE_NAME = 'spark-v1';
+const CACHE_NAME = 'spark-v2';
+const BASE = '/spark';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  BASE + '/',
+  BASE + '/index.html',
+  BASE + '/manifest.json',
+  BASE + '/sw.js'
 ];
 
 // Install — cache core assets
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(ASSETS).catch(() => {
+        // If some assets fail, still install
+        return Promise.resolve();
+      });
+    })
   );
   self.skipWaiting();
 });
@@ -25,7 +32,6 @@ self.addEventListener('activate', event => {
 
 // Fetch — serve from cache, fall back to network
 self.addEventListener('fetch', event => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
@@ -33,7 +39,6 @@ self.addEventListener('fetch', event => {
       if (cached) return cached;
 
       return fetch(event.request).then(response => {
-        // Cache successful responses for html/css/js/fonts
         if (response && response.status === 200) {
           const url = event.request.url;
           if (
@@ -50,25 +55,24 @@ self.addEventListener('fetch', event => {
         }
         return response;
       }).catch(() => {
-        // If offline and not cached, return the main app shell
         if (event.request.destination === 'document') {
-          return caches.match('/index.html');
+          return caches.match(BASE + '/index.html');
         }
       });
     })
   );
 });
 
-// Push notifications (ready for when you add a backend)
+// Push notifications
 self.addEventListener('push', event => {
   const data = event.data ? event.data.json() : {};
   const title = data.title || 'Spark';
   const options = {
     body: data.body || 'You have a new match! 💫',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-96.png',
+    icon: BASE + '/icons/icon-192.png',
+    badge: BASE + '/icons/icon-96.png',
     vibrate: [100, 50, 100],
-    data: { url: data.url || '/' }
+    data: { url: data.url || BASE + '/' }
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
